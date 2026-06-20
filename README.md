@@ -59,6 +59,27 @@ You must pass an instance of `io.BufferedIOBase` with writing capabilities (`io.
 > Writes are byte-aligned and trailing zero padding may be added automatically.
 > If your data isn't multiple of 8 bits, the last byte will be padded with zeros to make it a full byte.
 
+```python
+import blobfish
+
+binary = blobfish.Binary("011000010110001001100011")
+
+with open("file.bin", "wb") as file:
+    binary.write(file)
+```
+
+### `blobfish.Binary.encode`
+__a method to encode the binary data into a string or list of ints__
+
+You must pass `int` or `str` to specify the encoding type.
+```python
+import blobfish
+
+binary = blobfish.Binary("011000010110001001100011")
+print(binary.encode(str)) # Output: 'abc'
+print(binary.encode(int)) # Output: [97, 98, 99]
+```
+
 ---
 ## `blobfish.fromBytes`
 __a function to create a `blobfish.Binary` instance from bytes.__
@@ -84,6 +105,15 @@ __a function to create a `blobfish.Binary` instance from the contents of a binar
 You must pass an instance of `io.BufferedIOBase` with reading capabilities (`io.BufferedRandom` or `io.BufferedReader`), such as generated from `open(filename, "rb")` or `open(filename, "wb+")`.
 > [!CAUTION]
 > This function reads the entire file into memory, so it may not be suitable for large files.
+
+```python
+import blobfish
+
+with open("file.bin", "rb") as file:
+    binary = blobfish.fromFile(file)
+    
+print(type(binary)) # Output: <class 'blobfish.Binary'>
+```
 
 ---
 ## Shortcuts

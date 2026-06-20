@@ -84,9 +84,17 @@ class Binary:
     def write(self, file: "io.BufferedRandom | io.BufferedWriter") -> int:
         if not isinstance(file, (io.BufferedRandom, io.BufferedWriter)) or "b" not in file.mode or not file.writable():
             raise ValueError("File must be opened in binary write mode (e.g. \"wb\" or \"rb+\")")
-        extra = len(self.__data) % 8
-        data = self.__data+("0"*(8-extra if extra != 0 else 0))
-        return file.write(bytes(int(data[i:i+8],2) for i in range(0,len(data),8)))
+        return file.write(bytes(self.encode(int)))
+
+    def encode(self, encodingType: type[str] | type[int] = str) -> str | list[int]:
+        if encodingType == str:
+            return "".join(chr(i) for i in self.encode(int))
+        elif encodingType == int:
+            extra = len(self.__data) % 8
+            data = self.__data+("0"*(8-extra if extra != 0 else 0))
+            return [int(data[i:i+8],2) for i in range(0,len(data),8)]
+        else:
+            raise TypeError("Encoding type must be str or int")
 
 def fromBytes(bytes: bytes) -> "Binary":
     return Binary("".join(f"{byte:08b}" for byte in bytes))
