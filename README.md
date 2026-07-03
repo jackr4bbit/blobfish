@@ -84,6 +84,12 @@ print(binary.encode(str)) # Output: 'abc'
 print(binary.encode(int)) # Output: [97, 98, 99]
 ```
 
+### `blobfish.Binary.join`
+__a method to join multiple `blobfish.Binary` instances into a single `blobfish.Binary` instance__
+
+You must pass a list of `blobfish.Binary` instances.
+`blobfish.ZeroByte.join([blobfish.Binary("01100001"), blobfish.Binary("01100010"), blobfish.Binary("01100011")])` creates a `blobfish.Binary` instance representing "0110000100000000011000100000000001100011".
+
 ---
 ## `blobfish.fromBytes`
 __a function to create a `blobfish.Binary` instance from bytes.__

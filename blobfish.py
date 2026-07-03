@@ -34,7 +34,6 @@ class Binary:
             return NotImplemented
         return self.__add__(other)
 
-
     def __mul__(self, other: int) -> "NotImplementedType | Binary":
         if not isinstance(other, int):
             return NotImplemented
@@ -115,40 +114,55 @@ class Binary:
         else:
             raise TypeError("Encoding type must be str or int")
 
+    def join(self, data: "list[Binary]") -> "Binary":
+        """
+        Joins the binary data with a seperator.
+
+        Parameters:
+        data (``[Binary]``): The data to join.
+
+        Returns:
+        `Binary`: The joined binary data.
+        """
+        if not isinstance(data, Binary):
+            raise TypeError("Data must be a list of Binary instances")
+        return sum([item for binary in data for item in (binary, self)][:-1])
+
+
 def fromBytes(bytes: bytes) -> "Binary":
     """
-    Creates a `blobfish.Binary` instance from a bytes object.
+    Creates a `Binary` instance from a bytes object.
 
     Parameters:
     bytes (``bytes``): The input bytes object to convert.
 
     Returns:
-    `blobfish.Binary`: An instance representing the binary data of the input bytes object.
+    `Binary`: An instance representing the binary data of the input bytes object.
     """
     return Binary("".join(f"{byte:08b}" for byte in bytes))
 
 def fromString(string: str, encoding: str="utf-8") -> "Binary":
     """
-    Creates a `blobfish.Binary` instance from a string.
+    Creates a `Binary` instance from a string.
 
     Parameters:
     string (``str``): The input string to convert.
     encoding (``str``, optional): The encoding to use for the string. Default is ``"utf-8"``.
 
     Returns:
-    `blobfish.Binary`: An instance representing the binary data of the input string.
+    `Binary`: An instance representing the binary data of the input string.
     """
     return fromBytes(string.encode(encoding))
 
 def fromFile(file: "io.BufferedRandom | io.BufferedReader") -> "Binary":
     """
-    Creates a `blobfish.Binary` instance from the contents of a binary file.
+    Creates a `Binary` instance from the contents of a binary file.
 
     Parameters:
     file (``io.BufferedRandom`` or ``io.BufferedReader``): The file to read from.
 
     Returns:
-    `blobfish.Binary`: An instance representing the binary data of the input file.
+    `Binary`: An instance representing the binary data of the input file.
     """
     if not isinstance(file, (io.BufferedRandom, io.BufferedReader)) or "b" not in file.mode or not file.readable():
             raise ValueError("File must be opened in binary read mode (e.g. \"rb\" or \"wb+\")")
