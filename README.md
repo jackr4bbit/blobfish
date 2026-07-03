@@ -72,6 +72,10 @@ with open("file.bin", "wb") as file:
 __a method to encode the binary data into a string or list of ints__
 
 You must pass `int` or `str` to specify the encoding type.
+> [!TIP]
+> Encodings are byte-aligned and trailing zero padding may be added automatically.
+> If your data isn't multiple of 8 bits, the last byte will be padded with zeros to make it a full byte.
+
 ```python
 import blobfish
 
