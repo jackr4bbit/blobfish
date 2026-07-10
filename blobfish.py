@@ -1,10 +1,11 @@
+from __future__ import annotations
 from types import NotImplementedType
 import io
 
 byteIndexes = True
 
 class Binary:
-    def __init__(self, *args: "Binary | str"):
+    def __init__(self, *args: Binary | str):
         self.byteIndexes = None
         if len(args) == 0:
             self.__data = ""
@@ -21,27 +22,27 @@ class Binary:
                 raise TypeError("You must pass a string of ones and zeroes or one or more Binary objects")
             self.__data = "".join(str(arg) for arg in args)
 
-    def __add__(self, other: "Binary") -> "NotImplementedType | Binary":
+    def __add__(self, other: Binary) -> NotImplementedType | Binary:
         if not isinstance(other, Binary):
             return NotImplemented
         return Binary(self.__data + str(other))
 
-    def __radd__(self, other: "Binary | int") -> "NotImplementedType | Binary":
+    def __radd__(self, other: Binary | int) -> NotImplementedType | Binary:
         if other == 0:
             return self
         elif not isinstance(other, Binary):
             return NotImplemented
         return self.__add__(other)
 
-    def __mul__(self, other: int) -> "NotImplementedType | Binary":
+    def __mul__(self, other: int) -> NotImplementedType | Binary:
         if not isinstance(other, int):
             return NotImplemented
         return Binary(self.__data * other)
 
-    def __rmul__(self, other: int) -> "NotImplementedType | Binary":
+    def __rmul__(self, other: int) -> NotImplementedType | Binary:
         return self.__mul__(other)
 
-    def __eq__(self, other: "Binary") -> NotImplementedType | bool:
+    def __eq__(self, other: Binary) -> NotImplementedType | bool:
         if not isinstance(other, Binary):
             return NotImplemented
         return self.__data == other.__data
@@ -52,7 +53,7 @@ class Binary:
     def __repr__(self) -> str:
         return f"Binary({self.__data!r})"
 
-    def __getitem__(self, key: slice | int) -> "Binary":
+    def __getitem__(self, key: slice | int) -> Binary:
         step = 8 if (byteIndexes if self.byteIndexes is None else self.byteIndexes) else 1
         maxUnits = len(self.__data) // step
         if isinstance(key, slice):
@@ -79,7 +80,7 @@ class Binary:
     def __len__(self) -> int:
         return len(self.__data) // (8 if (byteIndexes if self.byteIndexes is None else self.byteIndexes) else 1)
 
-    def write(self, file: "io.BufferedRandom | io.BufferedWriter") -> int:
+    def write(self, file: io.BufferedRandom | io.BufferedWriter) -> int:
         """Writes the binary data to a file.
 
         Args:
@@ -112,7 +113,7 @@ class Binary:
         else:
             raise TypeError("Encoding type must be str or int")
 
-    def join(self, data: "list[Binary]") -> "Binary":
+    def join(self, data: list[Binary]) -> Binary:
         """Concatenates `Binary` instances with a seperator.
 
         This method will return a `Binary` instance of the `Binary` instances in the passed list concatenated using the `Binary` instance providing this method as the seperator.
@@ -128,7 +129,7 @@ class Binary:
         return Binary(self.__data.join(str(binary) for binary in data))
 
 
-def fromBytes(inputBytes: bytes) -> "Binary":
+def fromBytes(inputBytes: bytes) -> Binary:
     """
     Creates a `Binary` instance from a bytes object.
 
@@ -140,7 +141,7 @@ def fromBytes(inputBytes: bytes) -> "Binary":
     """
     return Binary("".join(f"{byte:08b}" for byte in inputBytes))
 
-def fromString(inputString: str, encoding: str="utf-8") -> "Binary":
+def fromString(inputString: str, encoding: str="utf-8") -> Binary:
     """Creates a `Binary` instance from a string.
 
     Args:
@@ -152,7 +153,7 @@ def fromString(inputString: str, encoding: str="utf-8") -> "Binary":
     """
     return fromBytes(inputString.encode(encoding))
 
-def fromFile(inputFile: "io.BufferedRandom | io.BufferedReader") -> "Binary":
+def fromFile(inputFile: io.BufferedRandom | io.BufferedReader) -> Binary:
     """Creates a `Binary` instance from the contents of a binary file.
 
     Args:
