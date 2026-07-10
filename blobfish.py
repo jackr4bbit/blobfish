@@ -42,7 +42,7 @@ class Binary:
     def __rmul__(self, other: int) -> NotImplementedType | Binary:
         return self.__mul__(other)
 
-    def __eq__(self, other: Binary) -> NotImplementedType | bool:
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, Binary):
             return NotImplemented
         return self.__data == other.__data
