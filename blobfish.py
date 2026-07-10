@@ -17,15 +17,14 @@ class Binary:
             else:
                 raise TypeError("You must pass a string of ones and zeroes or one or more Binary objects")
         else:
-            for arg in args:
-                if not isinstance(arg, Binary):
-                    raise TypeError("You must pass a string of ones and zeroes or one or more Binary objects")
+            if not all(isinstance(arg, Binary) for arg in args):
+                raise TypeError("You must pass a string of ones and zeroes or one or more Binary objects")
             self.__data = "".join(str(arg) for arg in args)
 
     def __add__(self, other: "Binary") -> "NotImplementedType | Binary":
         if not isinstance(other, Binary):
             return NotImplemented
-        return Binary(self.__data + other.__data)
+        return Binary(self.__data + str(other))
 
     def __radd__(self, other: "Binary | int") -> "NotImplementedType | Binary":
         if other == 0:
@@ -141,32 +140,32 @@ def fromBytes(inputBytes: bytes) -> "Binary":
     """
     return Binary("".join(f"{byte:08b}" for byte in inputBytes))
 
-def fromString(string: str, encoding: str="utf-8") -> "Binary":
+def fromString(inputString: str, encoding: str="utf-8") -> "Binary":
     """
     Creates a `Binary` instance from a string.
 
     Parameters:
-    string (``str``): The input string to convert.
+    inputString (``str``): The input string to convert.
     encoding (``str``, optional): The encoding to use for the string. Default is ``"utf-8"``.
 
     Returns:
     `Binary`: An instance representing the binary data of the input string.
     """
-    return fromBytes(string.encode(encoding))
+    return fromBytes(inputString.encode(encoding))
 
-def fromFile(file: "io.BufferedRandom | io.BufferedReader") -> "Binary":
+def fromFile(inputFile: "io.BufferedRandom | io.BufferedReader") -> "Binary":
     """
     Creates a `Binary` instance from the contents of a binary file.
 
     Parameters:
-    file (``io.BufferedRandom`` or ``io.BufferedReader``): The file to read from.
+    inputFile (``io.BufferedRandom`` or ``io.BufferedReader``): The file to read from.
 
     Returns:
     `Binary`: An instance representing the binary data of the input file.
     """
-    if not isinstance(file, (io.BufferedRandom, io.BufferedReader)) or "b" not in file.mode or not file.readable():
+    if not isinstance(inputFile, (io.BufferedRandom, io.BufferedReader)) or "b" not in inputFile.mode or not inputFile.readable():
             raise ValueError("File must be opened in binary read mode (e.g. \"rb\" or \"wb+\")")
-    return fromBytes(file.read())
+    return fromBytes(inputFile.read())
 
 #Shortcuts
 One      = Binary("1")
