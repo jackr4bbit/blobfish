@@ -129,17 +129,17 @@ class Binary:
         return sum([item for binary in data for item in (binary, self)][:-1])
 
 
-def fromBytes(bytes: bytes) -> "Binary":
+def fromBytes(inputBytes: bytes) -> "Binary":
     """
     Creates a `Binary` instance from a bytes object.
 
     Parameters:
-    bytes (``bytes``): The input bytes object to convert.
+    inputBytes (``bytes``): The input bytes object to convert.
 
     Returns:
     `Binary`: An instance representing the binary data of the input bytes object.
     """
-    return Binary("".join(f"{byte:08b}" for byte in bytes))
+    return Binary("".join(f"{byte:08b}" for byte in inputBytes))
 
 def fromString(string: str, encoding: str="utf-8") -> "Binary":
     """
