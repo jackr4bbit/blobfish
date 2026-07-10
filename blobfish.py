@@ -124,9 +124,9 @@ class Binary:
         Returns:
         `Binary`: The joined binary data.
         """
-        if not isinstance(data, Binary):
+        if not isinstance(data, list) or not all(isinstance(binary, Binary) for binary in data):
             raise TypeError("Data must be a list of Binary instances")
-        return sum([item for binary in data for item in (binary, self)][:-1])
+        return Binary(self.__data.join(str(binary) for binary in data))
 
 
 def fromBytes(inputBytes: bytes) -> "Binary":
