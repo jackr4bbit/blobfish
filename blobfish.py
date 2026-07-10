@@ -80,29 +80,28 @@ class Binary:
         return len(self.__data) // (8 if (byteIndexes if self.byteIndexes is None else self.byteIndexes) else 1)
 
     def write(self, file: "io.BufferedRandom | io.BufferedWriter") -> int:
-        """
-        Writes the binary data to a file.
+        """Writes the binary data to a file.
 
-        Parameters:
-        file (``io.BufferedRandom`` or ``io.BufferedWriter``): The file to write to.
+        Args:
+            file: The file to write to.
 
         Returns:
-        ``int``: The number of bytes written to the file.
+            The number of bytes written to the file.
         """
         if not isinstance(file, (io.BufferedRandom, io.BufferedWriter)) or "b" not in file.mode or not file.writable():
             raise ValueError("File must be opened in binary write mode (e.g. \"wb\" or \"rb+\")")
         return file.write(bytes(self.encode(int)))
 
     def encode(self, encodingType: type[str] | type[int] = str) -> str | list[int]:
-        """
-        Encodes the binary data into a string or list of ints.
+        """Encodes the binary data into a string or list of ints.
 
-        Parameters:
-        encodingType (``str`` or ``int``, optional): The type to encode the binary data as. Default is ``str``.
+        Args:
+            encodingType: The type to encode the binary data as. Defaults to `str`.
 
         Returns:
-        Passing ``str`` will return a string of the encoded binary data.
-        Passing ``int`` will return a list of the ascii codes as integers.
+            The encoded data based on `encodingType`:
+                - If `str`: A string of the encoded binary data.
+                - If `int`: A list of the ASCII codes as integers.
         """
         if encodingType == str:
             return "".join(chr(i) for i in self.encode(int))
@@ -114,14 +113,15 @@ class Binary:
             raise TypeError("Encoding type must be str or int")
 
     def join(self, data: "list[Binary]") -> "Binary":
-        """
-        Joins the binary data with a seperator.
+        """Concatenates `Binary` instances with a seperator.
 
-        Parameters:
-        data (``[Binary]``): The data to join.
+        This method will return a `Binary` instance of the `Binary` instances in the passed list concatenated using the `Binary` instance providing this method as the seperator.
+
+        Args:
+            data: The data to join.
 
         Returns:
-        `Binary`: The joined binary data.
+            The joined binary data.
         """
         if not isinstance(data, list) or not all(isinstance(binary, Binary) for binary in data):
             raise TypeError("Data must be a list of Binary instances")
@@ -132,36 +132,34 @@ def fromBytes(inputBytes: bytes) -> "Binary":
     """
     Creates a `Binary` instance from a bytes object.
 
-    Parameters:
-    inputBytes (``bytes``): The input bytes object to convert.
+    Args:
+        inputBytes: The input bytes object to convert.
 
     Returns:
-    `Binary`: An instance representing the binary data of the input bytes object.
+        The binary data of the input bytes object.
     """
     return Binary("".join(f"{byte:08b}" for byte in inputBytes))
 
 def fromString(inputString: str, encoding: str="utf-8") -> "Binary":
-    """
-    Creates a `Binary` instance from a string.
+    """Creates a `Binary` instance from a string.
 
-    Parameters:
-    inputString (``str``): The input string to convert.
-    encoding (``str``, optional): The encoding to use for the string. Default is ``"utf-8"``.
+    Args:
+        inputString: The input string to convert.
+        encoding: The encoding to use for the string. Defaults to `"utf-8"`.
 
     Returns:
-    `Binary`: An instance representing the binary data of the input string.
+        The binary data of the input string.
     """
     return fromBytes(inputString.encode(encoding))
 
 def fromFile(inputFile: "io.BufferedRandom | io.BufferedReader") -> "Binary":
-    """
-    Creates a `Binary` instance from the contents of a binary file.
+    """Creates a `Binary` instance from the contents of a binary file.
 
-    Parameters:
-    inputFile (``io.BufferedRandom`` or ``io.BufferedReader``): The file to read from.
+    Args:
+        inputFile: The file to read from.
 
     Returns:
-    `Binary`: An instance representing the binary data of the input file.
+        The binary data of the input file.
     """
     if not isinstance(inputFile, (io.BufferedRandom, io.BufferedReader)) or "b" not in inputFile.mode or not inputFile.readable():
             raise ValueError("File must be opened in binary read mode (e.g. \"rb\" or \"wb+\")")
