@@ -14,18 +14,18 @@ class Binary:
             if isinstance(data, str) and set(data).issubset({"1", "0"}):
                 self.__data = data
             elif isinstance(data, Binary):
-                self.__data = str(data)
+                self.__data = data.__data
             else:
                 raise TypeError("You must pass a string of ones and zeroes or one or more Binary objects")
         else:
             if not all(isinstance(arg, Binary) for arg in args):
                 raise TypeError("You must pass a string of ones and zeroes or one or more Binary objects")
-            self.__data = "".join(str(arg) for arg in args)
+            self.__data = "".join(arg.__data for arg in args)
 
     def __add__(self, other: Binary) -> NotImplementedType | Binary:
         if not isinstance(other, Binary):
             return NotImplemented
-        return Binary(self.__data + str(other))
+        return Binary(self.__data + other.__data)
 
     def __radd__(self, other: Binary | int) -> NotImplementedType | Binary:
         if other == 0:
@@ -48,7 +48,13 @@ class Binary:
         return self.__data == other.__data
 
     def __str__(self) -> str:
-        return self.__data
+        return self.decode(encoding = "utf-8")
+
+    def __int__(self) -> int:
+        extra = len(self.__data) % 8
+        data = ("0"*(8-extra if extra != 0 else 0))+self.__data
+        return int(data,2)
+
 
     def __repr__(self) -> str:
         return f"Binary({self.__data!r})"
@@ -91,27 +97,21 @@ class Binary:
         """
         if not isinstance(file, (io.BufferedRandom, io.BufferedWriter)) or "b" not in file.mode or not file.writable():
             raise ValueError("File must be opened in binary write mode (e.g. \"wb\" or \"rb+\")")
-        return file.write(bytes(self.encode(int)))
+        return file.write(str(self).encode("utf-8"))
 
-    def encode(self, encodingType: type[str] | type[int] = str) -> str | list[int]:
-        """Encodes the binary data into a string or list of ints.
+    def decode(self, encoding: str="utf-8") -> str:
+        """Encodes the binary data into a string.
 
         Args:
-            encodingType: The type to encode the binary data as. Defaults to `str`.
+            encoding: The encoding to use for the string. Defaults to `"utf-8"`.
 
         Returns:
-            The encoded data based on `encodingType`:
-                - If `str`: A string of the encoded binary data.
-                - If `int`: A list of the ASCII codes as integers.
+            A string of the encoded binary data.
         """
-        if encodingType == str:
-            return "".join(chr(i) for i in self.encode(int))
-        elif encodingType == int:
-            extra = len(self.__data) % 8
-            data = self.__data+("0"*(8-extra if extra != 0 else 0))
-            return [int(data[i:i+8],2) for i in range(0,len(data),8)]
-        else:
-            raise TypeError("Encoding type must be str or int")
+
+        extra = len(self.__data) % 8
+        data = self.__data+("0"*(8-extra if extra != 0 else 0))
+        return bytes(int(data[i:i+8],2) for i in range(0,len(data),8)).decode(encoding)
 
     def join(self, data: list[Binary]) -> Binary:
         """Concatenates `Binary` instances with a seperator.
@@ -126,7 +126,7 @@ class Binary:
         """
         if not isinstance(data, list) or not all(isinstance(binary, Binary) for binary in data):
             raise TypeError("Data must be a list of Binary instances")
-        return Binary(self.__data.join(str(binary) for binary in data))
+        return Binary(self.__data.join(binary.__data for binary in data))
 
 
 def fromBytes(inputBytes: bytes) -> Binary:
@@ -141,7 +141,7 @@ def fromBytes(inputBytes: bytes) -> Binary:
     """
     return Binary("".join(f"{byte:08b}" for byte in inputBytes))
 
-def fromString(inputString: str, encoding: str="utf-8") -> Binary:
+def fromString(inputString: str, encoding: str = "utf-8") -> Binary:
     """Creates a `Binary` instance from a string.
 
     Args:

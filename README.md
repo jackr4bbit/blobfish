@@ -44,7 +44,12 @@ _(alias `blobfish.B`)_
     - `blobfish.One != blobfish.Zero` results in `True`.
     - `blobfish.One != blobfish.One` results in `False`.
   - `str`: string representation of the binary data
-    - `str(blobfish.One)` results in `"1"`.
+    - String conversions are byte-aligned because they use blobfish.Binary.decode. See that method to learn more.
+    - `str(blobfish.Binary("011000010110001001100011"))` results in `"abc"`.
+    - `int`: integer representation of the binary data
+      - Integer conversions are byte-aligned and **leading** zero padding may be added automatically.
+        If your data isn't multiple of 8 bits, the first byte will be padded with zeros to make it a full byte.
+      - `int(blobfish.Binary("101"))` results in `5`.
   - `len`: length of the binary data in bits or bytes depending on `byteIndexes` (see below).
     - `len(blobfish.OneByte)` results in `1` if `blobfish.byteIndexes == True`.
     - `len(blobfish.OneByte)` results in `8` if `blobfish.byteIndexes == False`.
@@ -55,9 +60,9 @@ _(alias `blobfish.B`)_
 __a method to write the binary data to a file.__
 
 You must pass an instance of `io.BufferedIOBase` with writing capabilities (`io.BufferedRandom` or `io.BufferedWriter`), such as generated from `open(filename, "wb")` or `open(filename, "rb+")`.
+
 > [!TIP]
-> Writes are byte-aligned and trailing zero padding may be added automatically.
-> If your data isn't multiple of 8 bits, the last byte will be padded with zeros to make it a full byte.
+> Writes are byte-aligned because they use blobfish.Binary.decode. See that method's documentation to learn more.
 
 ```python
 import blobfish
@@ -68,20 +73,20 @@ with open("file.bin", "wb") as file:
     binary.write(file)
 ```
 
-### `blobfish.Binary.encode`
-__a method to encode the binary data into a string or list of ints__
+### `blobfish.Binary.decode`
+__a method to decode the binary data into a string__
 
-You must pass `int` or `str` to specify the encoding type.
+Optionally, you can specify what encoding to use as a string. The default is utf-8.
+
 > [!TIP]
-> Encodings are byte-aligned and trailing zero padding may be added automatically.
+> Decodings are byte-aligned and **trailing** zero padding may be added automatically.
 > If your data isn't multiple of 8 bits, the last byte will be padded with zeros to make it a full byte.
 
 ```python
 import blobfish
 
 binary = blobfish.Binary("011000010110001001100011")
-print(binary.encode(str)) # Output: 'abc'
-print(binary.encode(int)) # Output: [97, 98, 99]
+print(binary.encode()) # Output: 'abc'
 ```
 
 ### `blobfish.Binary.join`
