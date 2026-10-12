@@ -52,9 +52,13 @@ class Binary:
 
     def __int__(self) -> int:
         extra = len(self.__data) % 8
-        data = ("0"*(8-extra if extra != 0 else 0))+self.__data
+        data = self.__data + ("0" * (8 - extra if extra != 0 else 0))
         return int(data,2)
 
+    def __bytes__(self) -> bytes:
+        extra = len(self.__data) % 8
+        data = self.__data + ("0" * (8 - extra if extra != 0 else 0))
+        return bytes(int(data[i:i+8],2) for i in range(0,len(data),8))
 
     def __repr__(self) -> str:
         return f"Binary({self.__data!r})"
@@ -97,7 +101,7 @@ class Binary:
         """
         if not isinstance(file, (io.BufferedRandom, io.BufferedWriter)) or "b" not in file.mode or not file.writable():
             raise ValueError("File must be opened in binary write mode (e.g. \"wb\" or \"rb+\")")
-        return file.write(str(self).encode("utf-8"))
+        return file.write(bytes(self))
 
     def decode(self, encoding: str="utf-8") -> str:
         """Encodes the binary data into a string.
@@ -109,9 +113,7 @@ class Binary:
             A string of the encoded binary data.
         """
 
-        extra = len(self.__data) % 8
-        data = self.__data+("0"*(8-extra if extra != 0 else 0))
-        return bytes(int(data[i:i+8],2) for i in range(0,len(data),8)).decode(encoding)
+        return bytes(self).decode(encoding)
 
     def join(self, data: list[Binary]) -> Binary:
         """Concatenates `Binary` instances with a seperator.
